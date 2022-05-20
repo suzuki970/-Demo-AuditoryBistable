@@ -18,6 +18,8 @@ Screen('Close')
 Screen('Preference', 'SkipSyncTests', 1);
 rng('shuffle');
 
+addpath(genpath('./ToolBox'));
+
 % OpenGL
 AssertOpenGL;
 
@@ -39,7 +41,7 @@ myKeyCheck;
 
 %% --------------------paradigm settings------------------
 cfg = [];
-cfg.TIME_ISI = 2;                % ISI[s]
+cfg.TIME_ISI = 0.08;                % ISI[s]
 cfg.TIME_FIXATION = 2;           % fixation period[s]
 
 cfg.playTime = 170;              % sound presentation [s]
@@ -94,21 +96,24 @@ PsychPortAudio('Close');
 % ShowMessage();
 folderList = dir('./stim/*.wav');
 for i = 1:size(folderList,1)
-    [stim_sound{i,1},Fs] = audioread([folderList(i).folder '/' folderList(i).name]);
+    [stim_sound{i,1},cfg.AUDIO_SAMPLING_RATE] = audioread([folderList(i).folder '/' folderList(i).name]);
     stim_sound{i,1} = repmat(stim_sound{i,1},1,2)';
 end
+stim_sound{3,1} = zeros(2,length(stim_sound{1,1}));
 
-% cfg.condition_frame = 1:length(folderList);
-% cfg.condition_frame = repmat(cfg.condition_frame,1,cfg.NUM_TRIAL);
-% cfg.condition_frame = cfg.condition_frame(randperm(size(cfg.condition_frame,2)));
+cfg.condition_frame = [1 2 1 3];
+cfg.condition_frame = repmat(cfg.condition_frame,1,200);
 
 if useEyelink
     Eyelink('Message', 'Start_Experiment');
 end
 
-%% Start experiment
+%% Open audio device for low-latency output:
+% PsychPortAudio('GetDevices')
+% pahandle = PsychPortAudio('Open', 40, [], reqlatencyclass, freq, 2, buffersize, suggestedLatencySecs);
+pahandle = PsychPortAudio('Open', [], [], reqlatencyclass, freq, 2, buffersize, suggestedLatencySecs);
 
-%%-------------------------------------
+%% Start experiment
 fprintf('********* Start **********\n')
 
 for iTrial = 1:1
@@ -136,5 +141,5 @@ fprintf('********* Finish **********\n')
 sca;
 ListenChar(0);
 
-save_name = ['/bistableSync_',cfg.participantsInfo.name,'_',today_date];
-saveFiles();
+% save_name = ['/bistableSync_',cfg.participantsInfo.name,'_',today_date];
+% saveFiles();

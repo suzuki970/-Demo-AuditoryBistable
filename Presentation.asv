@@ -26,36 +26,23 @@ taskStart = tic;
 FLAG_QUEUE = true;
 
 
+isi = (length(out) / cfg.AUDIO_SAMPLING_RATE) + cfg.TIME_ISI;
 
 
-while toc(playTime) < cfg.playTime
+while playTime(toc) < cfg.playTime
     
     
     out = stim_sound{cfg.condition_frame(count),1};
-    isi = (length(out) / cfg.AUDIO_SAMPLING_RATE) + cfg.TIME_ISI;
-
+    
     PsychPortAudio('DeleteBuffer');
     PsychPortAudio('FillBuffer', pahandle, out);
     sTime = PsychPortAudio('Start', pahandle);
     
     timer.silence = tic;
-    while toc(timer.silence) < isi
-        
+    
+    while toc(timer.silence) < playTime
     end
     
-    count = count+1;
-    
-    clear keyCode;
-    [keyIsDown,secs,keyCode]=KbCheck;
-    % interrupt by ESC
-    if (keyCode(escapeKey))
-        Screen('CloseAll');
-        Screen('ClearAll');
-        ListenChar(0);
-        sca;
-        return
-    end
-
     %%
     if useEyelink
         getDataEyelink();
@@ -68,7 +55,17 @@ end
 %     Screen('Flip', win);  % Update display:
 %     Screen('Close', tex); % Release texture:
 %
-
+%     clear keyCode;
+%     [keyIsDown,secs,keyCode]=KbCheck;
+%     % interrupt by ESC
+%     if (keyCode(escapeKey))
+%         Screen('CloseAll');
+%         Screen('ClearAll');
+%         ListenChar(0);
+%         sca;
+%         return
+%     end
+%
 %     %%
 %     if (keyCode(KEY_LEFT)) && (~keyCode(KEY_RIGHT)) && (~keyCode(KEY_DOWN))
 %         if flag_button.right
