@@ -1,20 +1,9 @@
 
 PsychPortAudio('DeleteBuffer');
+
 if useEyelink
     Eyelink('Message', 'Start_Pesentation');
-    Eyelink('Message', ['Condition:' folderList(cfg.condition_frame(iTrial)).name]);
 end
-
-rate = 1;
-
-flag_button = [];
-flag_button.left = false;
-flag_button.right = false;
-flag_button.down = false;
-
-% moviename = [folderList(cfg.condition_frame(iTrial)).folder '\' folderList(cfg.condition_frame(iTrial)).name];
-% [movie movieduration fps imgw imgh] = Screen('OpenMovie', win, moviename);
-% Screen('PlayMovie', movie, rate, 1, 1.0);
 
 count = 1;
 
@@ -22,17 +11,27 @@ cfg.RT = [];
 cfg.response = {};
 
 playTime = tic;
-taskStart = tic;
-FLAG_QUEUE = true;
 
-
+stim_size = pixel_size(cfg.DOT_PITCH, cfg.STIM_SIZE, cfg.VISUAL_DISTANCE);
+stim_locs = pixel_size(cfg.DOT_PITCH, cfg.STIM_LOCS, cfg.VISUAL_DISTANCE);
 
 
 while toc(playTime) < cfg.playTime
     
+    out = stim_sound{cfg.condition_frame(count),1}; % load stim sound
+    isi = (length(out) / cfg.AUDIO_SAMPLING_RATE) + cfg.TIME_ISI; % set stim isi
+
+    if cfg.condition_frame(count) == 1 % when sound A presen
+        Screen('CopyWindow',empty,win);
+        Screen('DrawTexture', win, imagetex, [], ...
+            [centerX - stim_size - stim_locs, centerY - (stim_size*ratio), centerX + stim_size - stim_locs, centerY + (stim_size*ratio)]);
+    elseif cfg.condition_frame(count) == 2
+        Screen('CopyWindow',empty,win);
+        Screen('DrawTexture', win, imagetex, [], ...
+            [centerX - stim_size + stim_locs, centerY - (stim_size*ratio), centerX + stim_size + stim_locsE, centerY + (stim_size*ratio)]);
+    end
     
-    out = stim_sound{cfg.condition_frame(count),1};
-    isi = (length(out) / cfg.AUDIO_SAMPLING_RATE) + cfg.TIME_ISI;
+    Screen('Flip', win,0,1);
 
     PsychPortAudio('DeleteBuffer');
     PsychPortAudio('FillBuffer', pahandle, out);
@@ -40,8 +39,11 @@ while toc(playTime) < cfg.playTime
     
     timer.silence = tic;
     while toc(timer.silence) < isi
-        
+    
     end
+    
+    Screen('CopyWindow',empty,win);
+    Screen('Flip', win,0,1);
     
     count = count+1;
     

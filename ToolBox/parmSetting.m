@@ -72,8 +72,10 @@ returnKey = KbName('a'); % for mac
 % set screen number
 screens=Screen('Screens');
 screenNumber=max(screens);
-screenNumber=1;
+% screenNumber=1;
 
+PsychDebugWindowConfiguration();
+ 
 [win, rect] = Screen('OpenWindow',screenNumber, cfg.LUMINANCE_BACKGROUND);
 
 [centerX, centerY] = RectCenter(rect);

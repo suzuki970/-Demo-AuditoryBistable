@@ -41,16 +41,22 @@ myKeyCheck;
 
 %% --------------------paradigm settings------------------
 cfg = [];
-cfg.TIME_ISI = 0.08;                % ISI[s]
+cfg.TIME_ISI = 0.08;             % between pure tone [s]
 cfg.TIME_FIXATION = 2;           % fixation period[s]
 
-cfg.playTime = 170;              % sound presentation [s]
+cfg.playTime = 180;              % sound presentation [s]
 cfg.FRAME_RATE = 60;        
 
 cfg.VISUAL_DISTANCE = 60;        % visual distance from a monitor to the eyes [cm]
 cfg.NUM_TRIAL = 1;
 cfg.LUMINANCE_BACKGROUND = 140;  % [RGB]
 cfg.DOT_PITCH = 0.271;           % Flexscan S2133 (21.3 inch, 1600 x 1200 pixels size)
+
+% Visual stimulus size [deg]
+cfg.STIM_SIZE = 1;
+
+% stimulus location from the center [deg]
+cfg.STIM_LOCS = 3;
 
 %% -------------------------------------------------------------
 % set KeyInfo
@@ -91,7 +97,6 @@ waitframes = 5.1875;
 PsychPortAudio('Close');
 
 
-
 %% show some messages before start
 % ShowMessage();
 folderList = dir('./stim/*.wav');
@@ -103,6 +108,16 @@ stim_sound{3,1} = zeros(2,length(stim_sound{1,1}));
 
 cfg.condition_frame = [1 2 1 3];
 cfg.condition_frame = repmat(cfg.condition_frame,1,200);
+
+[I,map,transparency] = imread('stim/symb.png');
+I(:,:,4) = transparency;
+
+% imshow(I)
+[iy, ix, id] = size(I);
+ratio = iy/ix;
+
+imagetex = Screen('MakeTexture', win, I);
+
 
 if useEyelink
     Eyelink('Message', 'Start_Experiment');
