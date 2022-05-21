@@ -14,11 +14,11 @@ pause(0.5);
 while 1
     clear keyCode;
     [keyIsDown,secs,keyCode]=KbCheck;
-    if (keyCode(returnKey) )
+    if (keyCode(cfg.key.KEY_RETURN) )
         break;
     end
     % ESCEPE?????f
-    if (keyCode(escapeKey) )
+    if (keyCode(cfg.key.KEY_ESCAPE) )
         Screen('CloseAll');
         Screen('ClearAll');
         ListenChar(0);
@@ -46,22 +46,15 @@ pause(0.5);
 while 1
     clear keyCode;
     [keyIsDown,secs,keyCode]=KbCheck;
-    if (keyCode(returnKey) )
+    if (keyCode(cfg.key.KEY_RETURN) )
         break;
     end
     
-    if (keyCode(escapeKey) )
+    if (keyCode(cfg.key.KEY_ESCAPE) )
         Screen('CloseAll');
         Screen('ClearAll');
         ListenChar(0);
         return
     end
     
-    if (keyCode(spaceKey))
-        if useEyelink
-            EyelinkCalibration
-            Initialization();
-            break
-        end
-    end
 end
